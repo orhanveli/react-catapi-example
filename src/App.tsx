@@ -1,27 +1,34 @@
 import React from 'react';
-import { Box, Grid, GridItem, HStack, Flex } from '@chakra-ui/react';
-import { Switch, Route, Link } from 'react-router-dom';
+import { Container } from '@chakra-ui/react';
+import { Switch, Route } from 'react-router-dom';
 
 import { WithSubnavigation } from './components/NavBar';
 import { CatsHome } from './features/cats/CatsHome';
+import { Upload } from './features/cats/Upload';
 import { Login } from './features/auth/Login';
-import { Register } from './features/auth/Register';
+import { SignUp } from './features/auth/SignUp';
 
 function App() {
   return (
     <div className="App">
-      <WithSubnavigation />
-      <Switch>
-        <Route path="/register">
-          <Register />
-        </Route>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/">
-          <CatsHome />
-        </Route>
-      </Switch>
+      <Container maxW="container.xl">
+        <WithSubnavigation />
+        <Switch>
+          <Route path="/sign-up">
+            <SignUp />
+          </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/upload">
+            <Upload />
+          </Route>
+          <Route path="/">
+            <CatsHome />
+          </Route>
+        </Switch>
+      </Container>
+
     </div>
   );
 }

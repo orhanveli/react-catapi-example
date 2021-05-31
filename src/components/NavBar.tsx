@@ -21,6 +21,7 @@ import {
   ChevronDownIcon,
   ChevronRightIcon
 } from '@chakra-ui/icons';
+import { Link as RouterLink } from 'react-router-dom';
 
 export function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
@@ -73,13 +74,13 @@ export function WithSubnavigation() {
           spacing={6}
         >
           <Button
-            as={'a'}
             fontSize={'sm'}
             fontWeight={400}
             variant={'link'}
-            href={'#'}
+            as={RouterLink}
+            to={'/login'}
           >
-            Sign In
+            Login
           </Button>
           <Button
             display={{ base: 'none', md: 'inline-flex' }}
@@ -87,7 +88,8 @@ export function WithSubnavigation() {
             fontWeight={600}
             color={'white'}
             bg={'pink.400'}
-            href={'#'}
+            as={RouterLink}
+            to={'/sign-up'}
             _hover={{
               bg: 'pink.300'
             }}
@@ -116,8 +118,9 @@ const DesktopNav = () => {
           <Popover trigger={'hover'} placement={'bottom-start'}>
             <PopoverTrigger>
               <Link
+                as={RouterLink}
+                to={navItem.href ?? '/'}
                 p={2}
-                href={navItem.href ?? '#'}
                 fontSize={'sm'}
                 fontWeight={500}
                 color={linkColor}
@@ -207,8 +210,8 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
     <Stack spacing={4} onClick={children && onToggle}>
       <Flex
         py={2}
-        as={Link}
-        href={href ?? '#'}
+        as={RouterLink}
+        to={href ?? '/'}
         justify={'space-between'}
         align={'center'}
         _hover={{
@@ -267,6 +270,6 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: 'Upload',
-    href: '/kittens/upload'
+    href: '/upload'
   }
 ];
