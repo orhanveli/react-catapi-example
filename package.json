@@ -31,6 +31,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "ci": "echo \"Deploying...\" && exit 1",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
