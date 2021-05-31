@@ -10,13 +10,15 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAbPD7B0vrP99CSXOeLMbzB3bxbtDNi2PY',
-  authDomain: 'catsapi-react-demonstration.firebaseapp.com',
-  projectId: 'catsapi-react-demonstration',
-  storageBucket: 'catsapi-react-demonstration.appspot.com',
-  messagingSenderId: '589018570976',
-  appId: '1:589018570976:web:ce712173d2b0f8a822f085'
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
+// eslint-disable-next-line no-console
+console.debug(firebaseConfig);
 firebase.initializeApp(firebaseConfig);
 
 ReactDOM.render(
