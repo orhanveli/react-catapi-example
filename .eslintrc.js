@@ -85,6 +85,8 @@ module.exports = {
     // 'redux-saga/no-yield-in-race': 2,
     // 'redux-saga/yield-effects': 2,
     'require-yield': 0,
+    'no-unused-vars': 1,
+    '@typescript-eslint/no-unused-vars': 1,
     '@typescript-eslint/explicit-module-boundary-types': 0
   },
   settings: {
