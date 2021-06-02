@@ -7,6 +7,7 @@ import { CatsHome } from './features/cats/CatsHome';
 import { Upload } from './features/cats/Upload';
 import { Login } from './features/auth/Login';
 import { SignUp } from './features/auth/SignUp';
+import { PrivateRoute } from './components/PrivateRoute';
 
 function App() {
   return (
@@ -20,9 +21,9 @@ function App() {
           <Route path="/login">
             <Login />
           </Route>
-          <Route path="/upload">
+          <PrivateRoute path="/upload">
             <Upload />
-          </Route>
+          </PrivateRoute>
           <Route path="/">
             <CatsHome />
           </Route>

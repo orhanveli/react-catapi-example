@@ -1,3 +1,4 @@
+import * as CSS from 'csstype';
 import {
   Box,
   Flex,
@@ -13,7 +14,8 @@ import {
   PopoverContent,
   useColorModeValue,
   useBreakpointValue,
-  useDisclosure
+  useDisclosure,
+  ResponsiveValue
 } from '@chakra-ui/react';
 import {
   HamburgerIcon,
@@ -22,9 +24,17 @@ import {
   ChevronRightIcon
 } from '@chakra-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
+import { useAppSelector } from '../app/hooks';
+import { selectCurrentUser } from '../features/auth/auth.slice';
 
 export function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
+  const user = useAppSelector(selectCurrentUser);
+
+  const textColor = useColorModeValue('gray.800', 'white');
+  const textAlign = useBreakpointValue<ResponsiveValue<CSS.Property.TextAlign>>(
+    { base: 'center', md: 'left' }
+  );
 
   return (
     <Box>
@@ -54,11 +64,7 @@ export function WithSubnavigation() {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-          <Text
-            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-            fontFamily={'heading'}
-            color={useColorModeValue('gray.800', 'white')}
-          >
+          <Text textAlign={textAlign} fontFamily={'heading'} color={textColor}>
             Kitties
           </Text>
 
@@ -67,36 +73,58 @@ export function WithSubnavigation() {
           </Flex>
         </Flex>
 
-        <Stack
-          flex={{ base: 1, md: 0 }}
-          justify={'flex-end'}
-          direction={'row'}
-          spacing={6}
-        >
-          <Button
-            fontSize={'sm'}
-            fontWeight={400}
-            variant={'link'}
-            as={RouterLink}
-            to={'/login'}
+        {user ? (
+          <Stack
+            flex={{ base: 1, md: 0 }}
+            justify={'flex-end'}
+            direction={'row'}
+            spacing={6}
           >
-            Login
-          </Button>
-          <Button
-            display={{ base: 'none', md: 'inline-flex' }}
-            fontSize={'sm'}
-            fontWeight={600}
-            color={'white'}
-            bg={'pink.400'}
-            as={RouterLink}
-            to={'/sign-up'}
-            _hover={{
-              bg: 'pink.300'
-            }}
+            <Text textAlign={textAlign} color={textColor}>
+              Hello {user.firstName}
+            </Text>
+            <Button
+              fontSize={'sm'}
+              fontWeight={400}
+              variant={'link'}
+              as={RouterLink}
+              to={'/logout'}
+            >
+              Logout
+            </Button>
+          </Stack>
+        ) : (
+          <Stack
+            flex={{ base: 1, md: 0 }}
+            justify={'flex-end'}
+            direction={'row'}
+            spacing={6}
           >
-            Sign Up
-          </Button>
-        </Stack>
+            <Button
+              fontSize={'sm'}
+              fontWeight={400}
+              variant={'link'}
+              as={RouterLink}
+              to={'/login'}
+            >
+              Login
+            </Button>
+            <Button
+              display={{ base: 'none', md: 'inline-flex' }}
+              fontSize={'sm'}
+              fontWeight={600}
+              color={'white'}
+              bg={'pink.400'}
+              as={RouterLink}
+              to={'/sign-up'}
+              _hover={{
+                bg: 'pink.300'
+              }}
+            >
+              Sign Up
+            </Button>
+          </Stack>
+        )}
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>

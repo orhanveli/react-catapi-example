@@ -1,156 +1,16 @@
+import React from 'react';
 import {
   Flex,
   Box,
-  FormControl,
-  FormLabel,
-  Input,
-  Checkbox,
   Stack,
-  FormErrorMessage,
-  Button,
   Heading,
   Text,
-  Alert,
-  AlertDescription,
+  Link,
   useColorModeValue
 } from '@chakra-ui/react';
-import {
-  FormikHelpers,
-  FormikProps,
-  Form,
-  Field,
-  withFormik,
-  FormikState,
-  FieldInputProps
-} from 'formik';
-import firebase from 'firebase';
+import { Link as RouterLink } from 'react-router-dom';
 
-interface LoginFormModel {
-  email: string;
-  password: string;
-  serverError?: string;
-}
-
-type LoginFormInputProps = {
-  field: FieldInputProps<string>;
-  form: FormikState<LoginFormModel>;
-};
-
-const validateEmail = (val: string) => {
-  let error;
-  if (!val) {
-    error = 'Email is required';
-  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(val)) {
-    error = 'Invalid email address';
-  }
-  return error;
-};
-
-const validatePass = (val: string) => {
-  if (!val) {
-    return 'Password is required';
-  }
-  return false;
-};
-
-const InnerForm = (props: FormikProps<LoginFormModel>) => {
-  const { isSubmitting, isValid, errors } = props;
-
-  return (
-    <Form>
-      {!isValid && errors.serverError ? (
-        <Alert status="error" mb={3}>
-          <AlertDescription>{errors.serverError}</AlertDescription>
-        </Alert>
-      ) : (
-        ''
-      )}
-      <Stack spacing={4}>
-        <Field name="email" validate={validateEmail}>
-          {({ field, form }: LoginFormInputProps) => (
-            <FormControl
-              isRequired
-              isInvalid={!!form.errors.email && form.touched.email}
-            >
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <Input {...field} id="email" placeholder="email" type="email" />
-              <FormErrorMessage>{form.errors.email}</FormErrorMessage>
-            </FormControl>
-          )}
-        </Field>
-        <Field name="password" validate={validatePass}>
-          {({ field, form }: LoginFormInputProps) => (
-            <FormControl
-              isRequired
-              isInvalid={!!form.errors.password && form.touched.password}
-            >
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <Input
-                {...field}
-                id="password"
-                placeholder="password"
-                type="password"
-              />
-              <FormErrorMessage>{form.errors.password}</FormErrorMessage>
-            </FormControl>
-          )}
-        </Field>
-        <Stack spacing={10}>
-          <Stack
-            direction={{ base: 'column', sm: 'row' }}
-            align={'start'}
-            justify={'space-between'}
-          >
-            <Checkbox>Remember me</Checkbox>
-            {/* <Link color={'blue.400'}>Forgot password?</Link> */}
-          </Stack>
-          <Button
-            type="submit"
-            bg={'blue.400'}
-            color={'white'}
-            _hover={{
-              bg: 'blue.500'
-            }}
-            isLoading={isSubmitting}
-            isDisabled={isSubmitting}
-          >
-            Sign in
-          </Button>
-        </Stack>
-      </Stack>
-    </Form>
-  );
-};
-
-interface MyFormProps {
-  initialEmail?: string;
-}
-
-// Wrap our form with the withFormik HoC
-const LoginForm = withFormik<MyFormProps, LoginFormModel>({
-  mapPropsToValues: (props) => ({
-    email: props.initialEmail || '',
-    password: '',
-    serverError: undefined
-  }),
-
-  handleSubmit: async (
-    values: LoginFormModel,
-    { setSubmitting, setFieldError }: FormikHelpers<LoginFormModel>
-  ) => {
-    setSubmitting(true);
-    try {
-      const loginResult = await firebase
-        .auth()
-        .signInWithEmailAndPassword(values.email, values.password);
-      // eslint-disable-next-line no-console
-      console.log(loginResult);
-    } catch (error) {
-      setFieldError('serverError', error.message);
-    }
-    setSubmitting(false);
-  }
-})(InnerForm);
+import { LoginForm } from './LoginForm';
 
 export function Login() {
   return (
@@ -174,6 +34,15 @@ export function Login() {
           p={8}
         >
           <LoginForm />
+        </Box>
+        <Box>
+          <Text fontSize={'lg'} color={'gray.600'}>
+            If you don't have an account please click{' '}
+            <Link as={RouterLink} to="/sign-up" color={'blue.500'}>
+              here for sing up
+            </Link>
+            .
+          </Text>
         </Box>
       </Stack>
     </Flex>

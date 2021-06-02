@@ -1,7 +1,16 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import {
+  configureStore,
+  ThunkAction,
+  Action,
+  bindActionCreators
+} from '@reduxjs/toolkit';
 
 import counterReducer from '../features/counter/counterSlice';
-import authReducer from '../features/auth/auth.slice';
+import authReducer, {
+  loginAsync,
+  signUpAsync
+} from '../features/auth/auth.slice';
+import { connect, ConnectedProps } from 'react-redux';
 
 export const store = configureStore({
   reducer: {
@@ -18,3 +27,18 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   unknown,
   Action<string>
 >;
+
+const mapState = (state: RootState) => ({
+  auth: state.auth
+});
+
+const mapDispatchToProps = (dispatch: AppDispatch) =>
+  bindActionCreators(
+    {
+      loginAsync
+    },
+    dispatch
+  );
+
+export const connector = connect(mapState, mapDispatchToProps);
+export type PropsFromRedux = ConnectedProps<typeof connector>;
