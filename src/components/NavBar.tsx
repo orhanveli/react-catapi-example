@@ -81,14 +81,17 @@ export function WithSubnavigation() {
             spacing={6}
           >
             <Text textAlign={textAlign} color={textColor}>
-              Hello {user.firstName}
+              Hello {user.displayName ?? user.email}
             </Text>
             <Button
               fontSize={'sm'}
-              fontWeight={400}
-              variant={'link'}
+              color={'white'}
+              bg={'pink.400'}
+              _hover={{
+                bg: 'pink.300'
+              }}
               as={RouterLink}
-              to={'/logout'}
+              to={'/sign-out'}
             >
               Logout
             </Button>

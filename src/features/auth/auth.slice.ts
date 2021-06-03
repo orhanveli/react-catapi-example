@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import firebase from 'firebase';
+
 import { RootState } from '../../app/store';
-import { config } from '../../constants';
 import {
   auth,
   db,
@@ -8,7 +9,6 @@ import {
   findUserDocumentByEmail,
   updateUserIfExists
 } from '../../utils/firestore.utils';
-import { setItem } from '../../utils/local-storage.utils';
 import { SignUpFormModel } from './SignUpForm';
 
 // import { RootState, AppThunk } from '../../app/store';
@@ -21,7 +21,7 @@ export interface CatUser {
 }
 
 export interface AuthState {
-  currentUser: CatUser | null;
+  currentUser: firebase.User | null;
   status: 'idle' | 'loading' | 'failed';
   authError: string | null;
 }
@@ -44,15 +44,11 @@ export const loginAsync = createAsyncThunk(
     if (!loginResult.user) {
       throw new Error('Login failed!');
     }
-    setItem(config.storageKeys.authRefreshToken, loginResult.user.refreshToken);
     const isExists = await findUserDocumentByEmail(credentials.email);
     if (isExists) {
       return isExists;
     }
-    return {
-      id: loginResult.user.uid,
-      email: credentials.email
-    };
+    return loginResult.user.toJSON();
   }
 );
 
@@ -72,27 +68,23 @@ export const signUpAsync = createAsyncThunk(
     //   displayName: `${values.firstName} ${values.lastName}`
     // });
     const isExists = await findUserDocumentByEmail(values.email);
-    const newUser: Partial<CatUser> = {
-      email: values.email,
-      firstName: values.firstName,
-      lastName: values.lastName
-    };
     if (isExists) {
-      const updated = await updateUserIfExists(newUser);
-      if (updated) {
-        newUser.id = isExists.id;
-      }
+      await updateUserIfExists({
+        email: values.email,
+        firstName: values.firstName,
+        lastName: values.lastName
+      });
     } else {
-      const createUserResult = await db
-        .collection(dbCollections.users)
-        .add(newUser);
+      await db.collection(dbCollections.users).add({
+        id: signUpResult.user.uid,
+        email: values.email,
+        firstName: values.firstName,
+        lastName: values.lastName
+      });
       // eslint-disable-next-line no-console
       // console.log({ createUserResult });
-      if (createUserResult.id) {
-        newUser.id = createUserResult.id;
-      }
     }
-    return newUser as CatUser;
+    return signUpResult.user.toJSON();
   }
 );
 
@@ -103,7 +95,11 @@ export const signOutAsync = createAsyncThunk('auth/signOutAsync', async () => {
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    setCurrentUser: (state, action: PayloadAction<firebase.User | null>) => {
+      state.currentUser = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
       // login
@@ -119,7 +115,7 @@ export const authSlice = createSlice({
       .addCase(loginAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.authError = null;
-        state.currentUser = action.payload;
+        // state.currentUser = action.payload;
       })
       // Sign-in
       .addCase(signUpAsync.pending, (state) => {
@@ -133,7 +129,7 @@ export const authSlice = createSlice({
       .addCase(signUpAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.authError = null;
-        state.currentUser = action.payload;
+        // state.currentUser = action.payload;
       })
       // Sign-out
       .addCase(signOutAsync.pending, (state) => {
@@ -151,6 +147,8 @@ export const authSlice = createSlice({
       });
   }
 });
+
+export const { setCurrentUser } = authSlice.actions;
 
 export const selectAuth = (state: RootState) => state.auth;
 export const selectCurrentUser = (state: RootState) => state.auth.currentUser;

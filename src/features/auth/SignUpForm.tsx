@@ -11,30 +11,23 @@ import {
 } from '@chakra-ui/react';
 import {
   FormikHelpers,
-  FormikProps,
+  Formik,
   Form,
   Field,
-  withFormik,
   FormikState,
-  FieldInputProps
+  FieldInputProps,
+  useFormikContext
 } from 'formik';
 
 import { validateEmail, validatePass } from '../../utils/validation.utils';
-import {
-  dbCollections,
-  db,
-  auth,
-  findUserDocumentByEmail,
-  updateUserIfExists
-} from '../../utils/firestore.utils';
-import { CatUser } from './auth.slice';
+import { selectAuth, signUpAsync } from './auth.slice';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 
 export interface SignUpFormModel {
   email: string;
   password: string;
-  firstName?: string;
-  lastName?: string;
-  serverError?: string;
+  firstName: string;
+  lastName: string;
 }
 
 type SignUpFormInputProps = {
@@ -42,14 +35,19 @@ type SignUpFormInputProps = {
   form: FormikState<SignUpFormModel>;
 };
 
-const InnerForm = (props: FormikProps<SignUpFormModel>) => {
-  const { isSubmitting, isValid, errors } = props;
+interface SignUpFormProps {
+  initialEmail?: string;
+}
+
+const InnerForm = (props: SignUpFormProps) => {
+  const { isSubmitting } = useFormikContext();
+  const auth = useAppSelector(selectAuth);
 
   return (
     <Form>
-      {!isValid && errors.serverError ? (
+      {auth.authError ? (
         <Alert status="error" mb={3}>
-          <AlertDescription>{errors.serverError}</AlertDescription>
+          <AlertDescription>{auth.authError}</AlertDescription>
         </Alert>
       ) : (
         ''
@@ -137,57 +135,28 @@ const InnerForm = (props: FormikProps<SignUpFormModel>) => {
   );
 };
 
-interface SignUpFormProps {
-  initialEmail?: string;
-}
+export function SignUpForm(props: SignUpFormProps) {
+  const dispatch = useAppDispatch();
 
-export const SignUpForm = withFormik<SignUpFormProps, SignUpFormModel>({
-  mapPropsToValues: (props) => ({
+  const initialValues = {
     email: props.initialEmail || '',
     password: '',
     firstName: '',
-    lastName: '',
-    serverError: undefined
-  }),
+    lastName: ''
+  };
 
-  handleSubmit: async (
+  const handleSubmit = async (
     values: SignUpFormModel,
-    { setSubmitting, setFieldError }: FormikHelpers<SignUpFormModel>
+    { setSubmitting }: FormikHelpers<SignUpFormModel>
   ) => {
     setSubmitting(true);
-    try {
-      const signUpResult = await auth.createUserWithEmailAndPassword(
-        values.email,
-        values.password
-      );
-      // eslint-disable-next-line no-console
-      console.log(signUpResult);
-      if (signUpResult.user) {
-        const isExists = await findUserDocumentByEmail(values.email);
-        const newUser: Partial<CatUser> = {
-          email: values.email,
-          firstName: values.firstName,
-          lastName: values.lastName
-        };
-        if (isExists) {
-          const updated = await updateUserIfExists(newUser);
-          if (updated) {
-            newUser.id = isExists.id;
-          }
-        } else {
-          const createUserResult = await db
-            .collection(dbCollections.users)
-            .add(newUser);
-          // eslint-disable-next-line no-console
-          console.log({ createUserResult });
-          if (createUserResult.id) {
-            newUser.id = createUserResult.id;
-          }
-        }
-      }
-    } catch (error) {
-      setFieldError('serverError', error.message);
-    }
+    await dispatch(signUpAsync(values));
     setSubmitting(false);
-  }
-})(InnerForm);
+  };
+
+  return (
+    <Formik onSubmit={handleSubmit} initialValues={initialValues}>
+      <InnerForm {...props} />
+    </Formik>
+  );
+}
