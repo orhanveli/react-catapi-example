@@ -6,10 +6,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import counterReducer from '../features/counter/counterSlice';
-import authReducer, {
-  loginAsync,
-  signUpAsync
-} from '../features/auth/auth.slice';
+import authReducer, { loginAsync } from '../features/auth/auth.slice';
 import { connect, ConnectedProps } from 'react-redux';
 
 export const store = configureStore({

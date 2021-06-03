@@ -39,7 +39,7 @@ interface SignUpFormProps {
   initialEmail?: string;
 }
 
-const InnerForm = (props: SignUpFormProps) => {
+const InnerForm = () => {
   const { isSubmitting } = useFormikContext();
   const auth = useAppSelector(selectAuth);
 
@@ -156,7 +156,7 @@ export function SignUpForm(props: SignUpFormProps) {
 
   return (
     <Formik onSubmit={handleSubmit} initialValues={initialValues}>
-      <InnerForm {...props} />
+      <InnerForm />
     </Formik>
   );
 }

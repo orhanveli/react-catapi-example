@@ -39,7 +39,7 @@ type LoginFormInputProps = {
   form: FormikState<LoginFormModel>;
 };
 
-const InnerForm = (props: LoginFormProps) => {
+const InnerForm = () => {
   const authState = useAppSelector(selectAuth);
   const { isSubmitting } = useFormikContext<LoginFormModel>();
 
@@ -142,7 +142,7 @@ export const LoginForm = (props: LoginFormProps) => {
         />
       ) : (
         <Formik onSubmit={handleSubmit} initialValues={initialValues}>
-          <InnerForm {...props} />
+          <InnerForm />
         </Formik>
       )}
     </>

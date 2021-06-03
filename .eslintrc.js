@@ -86,7 +86,7 @@ module.exports = {
     // 'redux-saga/yield-effects': 2,
     'require-yield': 0,
     'no-unused-vars': 1,
-    '@typescript-eslint/no-unused-vars': 1,
+    '@typescript-eslint/no-unused-vars': 0,
     '@typescript-eslint/explicit-module-boundary-types': 0
   },
   settings: {

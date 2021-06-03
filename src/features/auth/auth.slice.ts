@@ -112,10 +112,9 @@ export const authSlice = createSlice({
         // console.log({ error: 'login', action });
         state.authError = action.error.message || 'Login error occurred';
       })
-      .addCase(loginAsync.fulfilled, (state, action) => {
+      .addCase(loginAsync.fulfilled, (state) => {
         state.status = 'idle';
         state.authError = null;
-        // state.currentUser = action.payload;
       })
       // Sign-in
       .addCase(signUpAsync.pending, (state) => {
@@ -126,10 +125,9 @@ export const authSlice = createSlice({
         state.status = 'failed';
         state.authError = action.error.message || 'Sign up error occurred';
       })
-      .addCase(signUpAsync.fulfilled, (state, action) => {
+      .addCase(signUpAsync.fulfilled, (state) => {
         state.status = 'idle';
         state.authError = null;
-        // state.currentUser = action.payload;
       })
       // Sign-out
       .addCase(signOutAsync.pending, (state) => {
