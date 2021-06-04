@@ -1,14 +1,22 @@
 import { config } from '../../constants';
+import { CatSummary } from './cats.models';
 
 export interface MakeRequestArgs extends RequestInit {
   method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
   params?: Record<string, string>;
 }
 
-export async function makeCatApiRequest<T = unknown>(
+interface ApiSearchResponse {
+  rows: CatSummary[];
+  paginationCount: number;
+  paginationLimit: number;
+  paginationPage: number;
+}
+
+export async function makeCatApiRequest(
   path: string,
   options?: MakeRequestArgs
-): Promise<T> {
+): Promise<Response> {
   const finalOptions: MakeRequestArgs = {
     ...(options || {
       method: 'GET'
@@ -19,22 +27,37 @@ export async function makeCatApiRequest<T = unknown>(
     }
   };
 
-  const url = new URL(config.catsapi.apiKey + path);
+  const url = new URL(config.catsapi.baseUrl + path);
   if (options?.params) {
     url.search = new URLSearchParams(options.params).toString();
   }
 
-  const apiResponse = await fetch(url.toString(), finalOptions);
-  return apiResponse.json() as Promise<T>;
+  return fetch(url.toString(), finalOptions);
 }
 
-export async function search(q: string, page = 1, limit = 10) {
-  const searchResponse = makeCatApiRequest('/images/search', {
+export async function search(
+  q: string,
+  page = 1,
+  limit = 10
+): Promise<ApiSearchResponse> {
+  const searchResponse = await makeCatApiRequest('/images/search', {
     method: 'GET',
     params: {
       page: String(page),
       limit: String(limit)
     }
   });
-  return searchResponse;
+  const paginationCount = Number(
+    searchResponse.headers.get('pagination-count')
+  );
+  const paginationLimit = Number(
+    searchResponse.headers.get('pagination-limit')
+  );
+  const paginationPage = Number(searchResponse.headers.get('pagination-page'));
+  return {
+    paginationCount,
+    paginationLimit,
+    paginationPage,
+    rows: (await searchResponse.json()) as CatSummary[]
+  };
 }

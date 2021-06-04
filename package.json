@@ -36,7 +36,9 @@
     "ci": "echo \"Deploying...\" && exit 1",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "fb:switch-prod": "firebase use production",
+    "fb:switch-dev": "firebase use default"
   },
   "browserslist": {
     "production": [
