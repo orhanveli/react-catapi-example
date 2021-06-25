@@ -92,6 +92,13 @@ export const signOutAsync = createAsyncThunk('auth/signOutAsync', async () => {
   await auth.signOut();
 });
 
+export const recoverPasswordAsync = createAsyncThunk(
+  'auth/recoverPasswordAsync',
+  async (emailAddress: string) => {
+    await auth.sendPasswordResetEmail(emailAddress);
+  }
+);
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -139,6 +146,22 @@ export const authSlice = createSlice({
         state.authError = action.error.message || 'Sign up error occurred';
       })
       .addCase(signOutAsync.fulfilled, (state) => {
+        state.status = 'idle';
+        state.authError = null;
+        state.currentUser = null;
+      })
+
+      // Password Recovery
+      .addCase(recoverPasswordAsync.pending, (state) => {
+        state.status = 'loading';
+        state.authError = null;
+      })
+      .addCase(recoverPasswordAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.authError =
+          action.error.message || 'Password recovery error occurred';
+      })
+      .addCase(recoverPasswordAsync.fulfilled, (state) => {
         state.status = 'idle';
         state.authError = null;
         state.currentUser = null;

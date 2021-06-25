@@ -22,6 +22,7 @@ export async function makeCatApiRequest(
       method: 'GET'
     }),
     headers: {
+      ...(options?.headers ?? {}),
       'Content-Type': 'application/json',
       'x-api-key': config.catsapi.apiKey
     }

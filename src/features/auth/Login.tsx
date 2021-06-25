@@ -37,6 +37,15 @@ export function Login() {
         </Box>
         <Box>
           <Text fontSize={'lg'} color={'gray.600'}>
+            Do you have a problem to access your account?{' '}
+            <Link as={RouterLink} to="/password-recovery" color={'blue.500'}>
+              Click here!
+            </Link>
+            .
+          </Text>
+        </Box>
+        <Box>
+          <Text fontSize={'lg'} color={'gray.600'}>
             If you don't have an account please click{' '}
             <Link as={RouterLink} to="/sign-up" color={'blue.500'}>
               here for sing up

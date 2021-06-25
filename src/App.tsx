@@ -14,6 +14,7 @@ import { Upload } from './features/cats/Upload';
 import { Login } from './features/auth/Login';
 import { SignUp } from './features/auth/SignUp';
 import { SignOut } from './features/auth/SingOut';
+import { PasswordRecovery } from './features/auth/PasswordRecovery';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -37,6 +38,9 @@ function App() {
           </Route>
           <Route path="/login">
             <Login />
+          </Route>
+          <Route path="/password-recovery">
+            <PasswordRecovery />
           </Route>
           <Route path="/sign-out">
             <SignOut />
