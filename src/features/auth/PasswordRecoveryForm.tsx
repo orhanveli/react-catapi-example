@@ -22,9 +22,8 @@ import {
 } from 'formik';
 import { Link as RouterLink } from 'react-router-dom';
 
+import { auth } from '../../utils/firestore.utils';
 import { validateEmail } from '../../utils/validation.utils';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { recoverPasswordAsync, selectAuth } from './auth.slice';
 import { useState } from 'react';
 
 interface PasswordRecoveryFormModel {
@@ -41,18 +40,10 @@ type PasswordRecoveryFormInputProps = {
 };
 
 const InnerForm = () => {
-  const authState = useAppSelector(selectAuth);
   const { isSubmitting } = useFormikContext<PasswordRecoveryFormModel>();
 
   return (
     <Form>
-      {authState.authError ? (
-        <Alert status="error" mb={3}>
-          <AlertDescription>{authState.authError}</AlertDescription>
-        </Alert>
-      ) : (
-        ''
-      )}
       <Stack spacing={4}>
         <Field name="email" type="email" validate={validateEmail}>
           {({ field, form }: PasswordRecoveryFormInputProps) => (
@@ -86,10 +77,8 @@ const InnerForm = () => {
 };
 
 export const PasswordRecoveryForm = (props: PasswordRecoveryFormProps) => {
-  const auth = useAppSelector(selectAuth);
-  const dispatch = useAppDispatch();
-
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
   const initialValues = {
     email: props.initialEmail ?? ''
@@ -100,9 +89,11 @@ export const PasswordRecoveryForm = (props: PasswordRecoveryFormProps) => {
     { setSubmitting }: FormikHelpers<PasswordRecoveryFormModel>
   ) => {
     setSubmitting(true);
-    await dispatch(recoverPasswordAsync(values.email));
-    if (!auth.authError) {
+    try {
+      await auth.sendPasswordResetEmail(values.email);
       setSuccess(true);
+    } catch (error) {
+      setError(error.message);
     }
     setSubmitting(false);
   };
@@ -130,6 +121,11 @@ export const PasswordRecoveryForm = (props: PasswordRecoveryFormProps) => {
 
   return (
     <>
+      {error ? (
+        <Alert status="error" mb={3}>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
       <Formik onSubmit={handleSubmit} initialValues={initialValues}>
         <InnerForm />
       </Formik>

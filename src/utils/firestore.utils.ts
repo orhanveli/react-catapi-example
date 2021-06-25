@@ -7,16 +7,27 @@ import { CatUser } from '../features/auth/auth.slice';
 let firebaseAppInstance: firebase.app.App;
 
 export const getAppInstance = () => {
+  const isProd = process.env.NODE_ENV === 'production';
   if (!firebaseAppInstance) {
-    const firebaseConfig = {
-      apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-      authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-      storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-      appId: process.env.REACT_APP_FIREBASE_APP_ID
+    const firebaseConfigDev = {
+      apiKey: 'AIzaSyAbPD7B0vrP99CSXOeLMbzB3bxbtDNi2PY',
+      authDomain: 'catsapi-react-demonstration.firebaseapp.com',
+      projectId: 'catsapi-react-demonstration',
+      storageBucket: 'catsapi-react-demonstration.appspot.com',
+      messagingSenderId: '589018570976',
+      appId: '1:589018570976:web:ce712173d2b0f8a822f085'
     };
-    firebaseAppInstance = firebase.initializeApp(firebaseConfig);
+    const firebaseConfigProd = {
+      apiKey: 'AIzaSyD6lXKDTx2RFQoRVW93Eo0SrwdL2wHTKSA',
+      authDomain: 'catsapi-prod.firebaseapp.com',
+      projectId: 'catsapi-prod',
+      storageBucket: 'catsapi-prod.appspot.com',
+      messagingSenderId: '789304791379',
+      appId: '1:789304791379:web:dc9eb4328458231ac611a6'
+    };
+    firebaseAppInstance = firebase.initializeApp(
+      isProd ? firebaseConfigProd : firebaseConfigDev
+    );
   }
   return firebaseAppInstance;
 };
