@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "catsapi-react-demonstration",
+    "production": "catsapi-prod"
+  }
+}
